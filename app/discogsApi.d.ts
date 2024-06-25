@@ -25,6 +25,20 @@ interface Release {
 
 export interface Releases {
   releases: Release[];
+  pagination: Pagination;
+}
+
+interface Pagination {
+  per_page: number;
+  pages: number;
+  page: number;
+  urls: {
+    last?: string;
+    next?: string;
+    prev?: string;
+    first?: string;
+  };
+  items: number;
 }
 
 export interface MasterRelease {
