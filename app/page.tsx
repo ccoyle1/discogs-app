@@ -5,7 +5,7 @@ import { Artist, Releases } from "./discogsApi";
 import Image from "next/image";
 
 export default function Search() {
-  const router = useRouter()
+  const router = useRouter();
   const [artist, setArtist] = useState<Artist>();
   const [artistId, setArtistId] = useState();
   const [currentPage, setCurrentPage] = useState(1);
@@ -28,7 +28,7 @@ export default function Search() {
             (item: { title: string | undefined }) => item.title === artist?.name
           )?.id
         )
-      )
+      );
   };
 
   useEffect(() => {
@@ -43,10 +43,10 @@ export default function Search() {
       }
     )
       .then((response) => response.json())
-      .then((result) => setRelease(result))
-  }, [artistId, currentPage])
+      .then((result) => setRelease(result));
+  }, [artistId, currentPage]);
 
-  const totalPages = Math.ceil(release?.pagination.pages / 5);
+  const totalPages = Math.ceil(release?.pagination?.items / 5);
   const startIndex = (currentPage - 1) * 5;
   const endIndex = startIndex + 5;
   const currentItems = release?.releases.slice(startIndex, endIndex);
@@ -60,7 +60,9 @@ export default function Search() {
   return (
     <div className="p-12 md:p-24 flex items-center md:items-start flex-col gap-10 justify-center m-auto w-full">
       <div className="flex gap-2 flex-col m-auto items-center">
-        <h1 className="text-2xl font-bold m-auto text-emerald-400">Discogs Search App</h1>
+        <h1 className="text-2xl font-bold m-auto text-emerald-400">
+          Discogs Search App
+        </h1>
         <label htmlFor="string" className="text-lg font-bold">
           Search
         </label>
@@ -101,10 +103,23 @@ export default function Search() {
             </div>
           </div>
         ))}
-        <div className="flex w-full items-center justify-center gap-10">
-          <button onClick={() => setCurrentPage(currentPage - 1)}>Prev</button>
-          <button onClick={() => setCurrentPage(currentPage + 1)}>Next</button>
-        </div>
+        {currentItems && (
+          <div className="flex w-full items-center justify-center gap-10">
+            <button onClick={() => setCurrentPage(currentPage - 1)}>
+              Prev
+            </button>
+            <span>{currentPage}</span>
+            <button onClick={() => setCurrentPage(currentPage + 1)}>
+              {currentPage + 1}
+            </button>
+            <button onClick={() => setCurrentPage(totalPages)}>
+              {totalPages}
+            </button>
+            <button onClick={() => setCurrentPage(currentPage + 1)}>
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
