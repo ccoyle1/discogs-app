@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import { MouseEvent, useEffect, useState } from 'react';
 import { Artist, Releases } from './discogsApi';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const numOfItems = 5;
 
@@ -68,12 +69,6 @@ export default function Search() {
 	const totalPages = Math.ceil((release?.pagination?.items ?? 1) / numOfItems);
 	const currentItems = release?.releases ?? [];
 
-	const handleClick = (e: MouseEvent, path: string) => {
-		e.preventDefault();
-
-		router.push(path);
-	};
-
 	return (
 		<div className='p-12 md:p-24 flex items-center md:items-start flex-col gap-10 justify-center m-auto w-full'>
 			<div className='flex gap-2 flex-col m-auto items-center'>
@@ -101,17 +96,10 @@ export default function Search() {
 
 			<div className='flex flex-wrap gap-10 justify-center w-full'>
 				{currentItems?.map((item) => (
-					<div
+					<Link
 						key={item.id}
 						className='border-emerald-400 border p-4 rounded-xl flex justify-between flex-col gap-4 cursor-pointer'
-						onClick={(e) =>
-							handleClick(
-								e,
-								item.main_release
-									? `/release/${item.main_release}`
-									: `/release/${item.id}`,
-							)
-						}
+						href={item.main_release ? `/release/${item.main_release}` : `/release/${item.id}`}
 					>
 						<div className='m-auto'>
 							<Image
@@ -125,7 +113,7 @@ export default function Search() {
 							<h1>{item.title}</h1>
 							<span>{item.artist}</span>
 						</div>
-					</div>
+					</Link>
 				))}
 				{artistId === null ? (
 					<span>No results found for {artist?.name}</span>
