@@ -3,4 +3,5 @@ This is an example project that is intended to be used to search for the name of
 For local use after cloning, create a .env.local file and add a Discogs consumer key and secret in this format:
 
 NEXT_PUBLIC_DISCOGS_KEY=key
+
 NEXT_PUBLIC_DISCOGS_SECRET=secret
