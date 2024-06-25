@@ -2,7 +2,7 @@ import { fetchReleaseData } from "@/app/fetchRelease";
 import { MasterRelease } from "@/app/discogsApi";
 import Image from "next/image";
 
-export default async function ReleasePage({ params }) {
+export default async function ReleasePage({ params }: { params: { id: string }}) {
   const { id } = params;
   
   const releaseData: MasterRelease = await fetchReleaseData(id);

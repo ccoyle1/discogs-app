@@ -1,4 +1,4 @@
-export async function fetchReleaseData(releaseId: number) {
+export async function fetchReleaseData(releaseId: string) {
     const apiKey = process.env.NEXT_PUBLIC_DISCOGS_KEY;
     const apiSecret = process.env.NEXT_PUBLIC_DISCOGS_SECRET;
   
