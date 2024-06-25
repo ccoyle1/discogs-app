@@ -17,6 +17,7 @@ export default function Search() {
 	const [hasNoResults, setHasNoResults] = useState(false);
 
 	const handleSubmit = () => {
+		setCurrentPage(1);
 		fetch(
 			`https://api.discogs.com/database/search?type=artist&q=${artist?.name}`,
 			{
@@ -27,36 +28,41 @@ export default function Search() {
 			},
 		)
 			.then((response) => response.json())
-			.then((data) =>
-				setArtistId(
-					data.results.find(
-						(item: { title: string | undefined }) =>
-							item.title?.toLowerCase() === artist?.name.toLowerCase(),
-					)?.id,
-				),
-			)
-      .catch((error) => console.log(error));
+			.then((data) => {
+				const foundArtistId = data.results.find(
+					(item: { title: string | undefined }) =>
+						item.title?.toLowerCase() === artist?.name.toLowerCase(),
+				)?.id;
+				if (foundArtistId) {
+					setArtistId(foundArtistId);
+				} else {
+					setArtistId(null);
+				}
+			})
+			.catch((error) => console.log(error));
 	};
 
 	useEffect(() => {
-		fetch(
-			`https://api.discogs.com/artists/${artistId}/releases?page=
-      ${currentPage}`,
-			{
-				method: 'GET',
-				headers: {
-					Authorization: `Discogs key=${process.env.NEXT_PUBLIC_DISCOGS_KEY}, secret=${process.env.NEXT_PUBLIC_DISCOGS_SECRET}`,
+		if (artistId) {
+			fetch(
+				`https://api.discogs.com/artists/${artistId}/releases?page=
+      ${currentPage}&per_page=${numOfItems}`,
+				{
+					method: 'GET',
+					headers: {
+						Authorization: `Discogs key=${process.env.NEXT_PUBLIC_DISCOGS_KEY}, secret=${process.env.NEXT_PUBLIC_DISCOGS_SECRET}`,
+					},
 				},
-			},
-		)
-			.then((response) => response.json())
-			.then((result) => {
-        setRelease(result);
-        if (result.releases.length === 0) {
-          setHasNoResults(true);
-        }
-      })
-      .catch((error) => console.log(error));
+			)
+				.then((response) => response.json())
+				.then((result) => {
+					setRelease(result);
+					if (result.releases.length === 0) {
+						setHasNoResults(true);
+					}
+				})
+				.catch((error) => console.log(error));
+		}
 	}, [artistId, currentPage]);
 
 	const totalPages = Math.ceil((release?.pagination?.items ?? 1) / numOfItems);
@@ -97,8 +103,15 @@ export default function Search() {
 				{currentItems?.map((item) => (
 					<div
 						key={item.id}
-						className='border-emerald-400 border p-4 rounded-xl flex justify-between flex-col gap-4'
-						onClick={(e) => handleClick(e, `/release/${item.main_release}`)}
+						className='border-emerald-400 border p-4 rounded-xl flex justify-between flex-col gap-4 cursor-pointer'
+						onClick={(e) =>
+							handleClick(
+								e,
+								item.main_release
+									? `/release/${item.main_release}`
+									: `/release/${item.id}`,
+							)
+						}
 					>
 						<div className='m-auto'>
 							<Image
@@ -114,27 +127,45 @@ export default function Search() {
 						</div>
 					</div>
 				))}
-        {artistId === null ? (
-          <span>No results found for {artist?.name}</span>
-        ) : null}
-        {hasNoResults ? <span>No results for artist: {artist?.name}</span> : null}
+				{artistId === null ? (
+					<span>No results found for {artist?.name}</span>
+				) : null}
+				{hasNoResults ? (
+					<span>No results for artist: {artist?.name}</span>
+				) : null}
 				{currentItems.length > 0 && (
-					<div className='flex w-full items-center justify-center gap-10'>
-						<button onClick={() => setCurrentPage(currentPage - 1)}>
-							Prev
-						</button>
-						<span>{currentPage}</span>
-						<button onClick={() => setCurrentPage(currentPage + 1)}>
-							{currentPage + 1}
-						</button>
-						<button onClick={() => setCurrentPage(totalPages)}>
-							{totalPages}
-						</button>
-						<button onClick={() => setCurrentPage(currentPage + 1)}>
-							Next
-						</button>
-					</div>
-				)}
+          <div className="flex w-full items-center justify-center gap-10">
+            {currentPage > 1 ? (
+              <button
+                onClick={() => setCurrentPage((activePage) => activePage - 1)}
+              >
+                Prev
+              </button>
+            ) : null}
+            <span>{currentPage}</span>
+            {currentPage < totalPages ? (
+              <>
+                {currentPage + 1 < totalPages ? (
+                  <button
+                    onClick={() =>
+                      setCurrentPage((activePage) => activePage + 1)
+                    }
+                  >
+                    {currentPage + 1}
+                  </button>
+                ) : null}
+                <button onClick={() => setCurrentPage(totalPages)}>
+                  {totalPages}
+                </button>
+                <button
+                  onClick={() => setCurrentPage((activePage) => activePage + 1)}
+                >
+                  Next
+                </button>
+              </>
+            ) : null}
+          </div>
+        )}
 			</div>
 		</div>
 	);

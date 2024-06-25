@@ -16,7 +16,7 @@ export default async function ReleasePage({ params }: { params: { id: string }})
       <div className="flex flex-col gap-4">
           {releaseData?.images?.map((item) => (
             <Image
-              className="max-w-[300px] px-4 l"
+              className="max-w-[300px] px-4"
               key={item.uri}
               src={item.resource_url}
               alt={item.uri}
@@ -27,7 +27,7 @@ export default async function ReleasePage({ params }: { params: { id: string }})
       </div>
       <div className="flex flex-col gap-4">
         {releaseData.artists.map((item) => (
-          <h1 className="text-2xl font-bold" key={item.name}>
+          <h1 className="text-2xl font-bold text-emerald-400" key={item.name}>
             {item.name} - {releaseData.title}
           </h1>
         ))}
