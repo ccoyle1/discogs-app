@@ -1,36 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { Artist, Releases } from "./discogsApi";
 import Image from "next/image";
-
-interface Artist {
-  name: string;
-  id?: number;
-}
-
-interface Stats {
-  community: {
-    in_collection: number;
-    in_wantlist: number;
-  };
-}
-
-interface Release {
-  stats?: Stats;
-  thumb?: string;
-  title?: string;
-  main_release?: number;
-  artist: string;
-  role?: string;
-  year?: number;
-  resource_url?: string;
-  type?: "master";
-  id?: number;
-}
-
-interface Releases {
-  releases: Release[];
-}
 
 export default function Search() {
   const [artist, setArtist] = useState<Artist>();
@@ -61,25 +33,7 @@ export default function Search() {
           .then((response) => response.json())
           .then((result) => setRelease(result))
       );
-
-    console.log(release?.releases);
-    // fetchReleaseInfo();
   };
-
-  // function fetchReleaseInfo() {
-  //   release?.releases.map((item) =>
-  //     fetch(`https://api.discogs.com/releases/${item.id}`, {
-  //       method: "GET",
-  //       headers: {
-  //         Authorization: `Discogs key=${process.env.NEXT_PUBLIC_DISCOGS_KEY}, secret=${process.env.NEXT_PUBLIC_DISCOGS_SECRET}`,
-  //       },
-  //     }).then((response) => response.json().then((data) => console.log(data)))
-  //   );
-
-  //   // const response = fetch(`https://api.discogs.com/releases/${item.id}`)
-  //   // .then((response) => response.json())
-  //   // .then((data) => {return { ...item, additionalData: data };})
-  // }
 
   return (
     <div className="App">
