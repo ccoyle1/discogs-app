@@ -1,6 +1,6 @@
 'use client';
-import { useRouter } from 'next/navigation';
-import { MouseEvent, useEffect, useState } from 'react';
+
+import { useEffect, useState } from 'react';
 import { Artist, Releases } from './discogsApi';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -8,7 +8,6 @@ import Link from 'next/link';
 const numOfItems = 5;
 
 export default function Search() {
-	const router = useRouter();
 	const [artist, setArtist] = useState<Artist>();
 	const [artistId, setArtistId] = useState<string | undefined | null>(
 		undefined,
