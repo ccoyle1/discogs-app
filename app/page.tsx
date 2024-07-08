@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { Artist, Releases } from './discogsApi';
 import { Search } from '@/components/Search';
 import { ReleaseList } from '@/components/ReleaseList';
+import Loading from './loading';
 
 const numOfItems = 5;
 
@@ -85,7 +86,9 @@ export default function Page() {
 
 			{currentItems.length > 0 ? (
 				<>
-					<ReleaseList currentItems={currentItems} />
+					<Suspense fallback={<Loading />}>
+						<ReleaseList currentItems={currentItems} />
+					</Suspense>
 					<div className='flex w-full items-center justify-center gap-10'>
 						{currentPage > 1 ? (
 							<>
@@ -123,13 +126,6 @@ export default function Page() {
 			) : (
 				<span>No results for artist: {artist?.name}</span>
 			)}
-
-			{/* {artistId === null ? (
-					<span>No results found for {artist?.name}</span>
-				) : null}
-				{hasNoResults ? (
-					<span>No results for artist: {artist?.name}</span>
-				) : null} */}
 		</div>
 	);
 }
