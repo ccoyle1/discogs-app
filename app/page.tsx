@@ -2,19 +2,18 @@
 
 import { useEffect, useState } from 'react';
 import { Artist, Releases } from './discogsApi';
-import Image from 'next/image';
-import Link from 'next/link';
+import { Search } from '@/components/Search';
+import { ReleaseList } from '@/components/ReleaseList';
 
 const numOfItems = 5;
 
-export default function Search() {
+export default function Page() {
 	const [artist, setArtist] = useState<Artist>();
 	const [artistId, setArtistId] = useState<string | undefined | null>(
 		undefined,
 	);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [release, setRelease] = useState<Releases>();
-	const [hasNoResults, setHasNoResults] = useState(false);
 
 	const handleSubmit = () => {
 		setCurrentPage(1);
@@ -57,9 +56,6 @@ export default function Search() {
 				.then((response) => response.json())
 				.then((result) => {
 					setRelease(result);
-					if (result.releases.length === 0) {
-						setHasNoResults(true);
-					}
 				})
 				.catch((error) => console.log(error));
 		}
@@ -84,76 +80,56 @@ export default function Search() {
 					type='string'
 					onChange={(event) => setArtist({ name: event.target.value })}
 				></input>
-				<button
-					className='bg-emerald-400 w-32 h-12 rounded-lg'
-					type='submit'
-					onClick={handleSubmit}
-				>
-					Submit
-				</button>
+				<Search handleSearch={handleSubmit} />
 			</div>
 
-			<div className='flex flex-wrap gap-10 justify-center w-full'>
-				{currentItems?.map((item) => (
-					<Link
-						key={item.id}
-						className='border-emerald-400 border p-4 rounded-xl flex justify-between flex-col gap-4 cursor-pointer'
-						href={item.main_release ? `/release/${item.main_release}` : `/release/${item.id}`}
-					>
-						<div className='m-auto'>
-							<Image
-								src={item.thumb ?? ''}
-								alt={item.title ?? ''}
-								width={200}
-								height={200}
-							/>
-						</div>
-						<div>
-							<h1>{item.title}</h1>
-							<span>{item.artist}</span>
-						</div>
-					</Link>
-				))}
-				{artistId === null ? (
+			{currentItems.length > 0 ? (
+				<>
+					<ReleaseList currentItems={currentItems} />
+					<div className='flex w-full items-center justify-center gap-10'>
+						{currentPage > 1 ? (
+							<>
+								<button
+									onClick={() => setCurrentPage((activePage) => activePage - 1)}
+								>
+									Prev
+								</button>
+								<span>{currentPage}</span>
+							</>
+						) : null}
+						{currentPage < totalPages ? (
+							<>
+								{currentPage + 1 < totalPages ? (
+									<button
+										onClick={() =>
+											setCurrentPage((activePage) => activePage + 1)
+										}
+									>
+										{currentPage + 1}
+									</button>
+								) : null}
+								<button onClick={() => setCurrentPage(totalPages)}>
+									{totalPages}
+								</button>
+								<button
+									onClick={() => setCurrentPage((activePage) => activePage + 1)}
+								>
+									Next
+								</button>
+							</>
+						) : null}
+					</div>
+				</>
+			) : (
+				<span>No results for artist: {artist?.name}</span>
+			)}
+
+			{/* {artistId === null ? (
 					<span>No results found for {artist?.name}</span>
 				) : null}
 				{hasNoResults ? (
 					<span>No results for artist: {artist?.name}</span>
-				) : null}
-				{currentItems.length > 0 && (
-          <div className="flex w-full items-center justify-center gap-10">
-            {currentPage > 1 ? (
-              <button
-                onClick={() => setCurrentPage((activePage) => activePage - 1)}
-              >
-                Prev
-              </button>
-            ) : null}
-            <span>{currentPage}</span>
-            {currentPage < totalPages ? (
-              <>
-                {currentPage + 1 < totalPages ? (
-                  <button
-                    onClick={() =>
-                      setCurrentPage((activePage) => activePage + 1)
-                    }
-                  >
-                    {currentPage + 1}
-                  </button>
-                ) : null}
-                <button onClick={() => setCurrentPage(totalPages)}>
-                  {totalPages}
-                </button>
-                <button
-                  onClick={() => setCurrentPage((activePage) => activePage + 1)}
-                >
-                  Next
-                </button>
-              </>
-            ) : null}
-          </div>
-        )}
-			</div>
+				) : null} */}
 		</div>
 	);
 }
